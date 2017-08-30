@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace hw1
 {
@@ -10,7 +7,9 @@ namespace hw1
     {
         static void Main(string[] args)
         {
-            int count = Anaga("6 4\ntape\nrate\nseat\npate\neast\npest");
+            string input = Console.ReadLine();
+            //"6 4\ntape\nrate\nseat\npate\neast\npest"
+            int count = Anaga(input);
 
             Console.WriteLine(count);
             Console.ReadLine();
