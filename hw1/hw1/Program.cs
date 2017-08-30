@@ -6,6 +6,7 @@ namespace hw1
 {
     class Program
     {
+#if (false)
         static void Main(string[] args)
         {
             List<string> wordArray = new List<string>();
@@ -28,7 +29,15 @@ namespace hw1
             Console.WriteLine(count);
             Console.ReadLine();
         }
+#endif
 
+#if (true)
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Approach 3 (time loop, subtract overhead): " + TimeTest.TimeAnaga(2).ToString("G2"));
+            Console.ReadLine();
+        }
+#endif
         public static int Anaga(List<string> wordArray)
         {
             string[] numbers = wordArray[0].Split(new[] { '\n', '\t', ' ' });
