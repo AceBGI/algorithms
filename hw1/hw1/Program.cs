@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace hw1
 {
@@ -7,29 +8,41 @@ namespace hw1
     {
         static void Main(string[] args)
         {
-            string input = Console.ReadLine();
-            //"6 4\ntape\nrate\nseat\npate\neast\npest"
-            int count = Anaga(input);
+            List<string> wordArray = new List<string>();
+            string line = Console.ReadLine();
+            while (!string.IsNullOrEmpty(line))
+            {
+                wordArray.Add(line);
+                line = Console.ReadLine();
+            }
+
+            // 6 4
+            // tape
+            // rate
+            // seat
+            // pate
+            // east
+            // pest
+            int count = Anaga(wordArray);
 
             Console.WriteLine(count);
             Console.ReadLine();
         }
 
-        public static int Anaga(string input)
+        public static int Anaga(List<string> wordArray)
         {
-            input.Trim();
-            string[] wordArray = input.Split(new[] { '\n', '\t', ' ' });
+            string[] numbers = wordArray[0].Split(new[] { '\n', '\t', ' ' });
             int n;
             int k;
-            Int32.TryParse(wordArray[0], out n);
-            Int32.TryParse(wordArray[1], out k);
+            Int32.TryParse(numbers[0], out n);
+            Int32.TryParse(numbers[1], out k);
 
             Dictionary<int, string> words = new Dictionary<int, string>();
             List<string> solutions = new List<string>();
             List<string> rejected = new List<string>();
 
 
-            for (int i = 2; i < wordArray.Length; i++)
+            for (int i = 1; i < wordArray.Count; i++)
             {
                 words.Add(i - 2,wordArray[i]);
             }
