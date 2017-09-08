@@ -8,7 +8,8 @@ namespace hw2
 {
     class Program
     {
-        public static Dictionary<int, List<int>> uniqueTrees = new Dictionary<int, List<int>>();
+        public static Dictionary<int, LinkedList<List<int>>> uniqueTrees = new Dictionary<int, LinkedList<List<int>> >();
+        static int NumberOfUnique = 0;
         static void Main(string[] args)
         {
             List<string> treeArray = new List<string>();
@@ -30,7 +31,7 @@ namespace hw2
                 Ceiling(item);
             }
 
-            Console.WriteLine(uniqueTrees.Count);
+            Console.WriteLine(NumberOfUnique);
             Console.ReadLine();
         }
 
@@ -44,11 +45,43 @@ namespace hw2
             // add unique trees to uniqueTrees (dictionary)
             if (uniqueTrees.ContainsKey(binaryTreeArray.Count))
             {
-                // do nothing ... you may have to do something here. Hopefully not!!!?
+                bool exit = false;
+                bool addList = false;
+
+                foreach (List<int> item in uniqueTrees[binaryTreeArray.Count])
+                {
+                    if(exit == true)
+                    {
+                        break;
+                    }
+
+                    for (int i = 0; i < item.Count; i++)
+                    {
+                        if( (binaryTreeArray[i] != 0 && item[i] != 0) || (binaryTreeArray[i] == 0 && item[i] == 0))
+                        {
+                            // do nothing
+                        }
+                        else
+                        {
+                            
+                            exit = true;
+                            addList = true;
+                            break;
+                        }
+                    }
+                }
+                if(addList == true)
+                {
+                    uniqueTrees[binaryTreeArray.Count].AddLast(binaryTreeArray);
+                    NumberOfUnique++;
+                }
             }
             else
             {
-                uniqueTrees.Add(binaryTreeArray.Count, binaryTreeArray);
+                LinkedList<List<int>> linked = new LinkedList<List<int>>();
+                linked.AddLast(binaryTreeArray);
+                uniqueTrees.Add(binaryTreeArray.Count, linked);
+                NumberOfUnique++;
             }
         }
 
@@ -111,85 +144,5 @@ namespace hw2
                 }
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-        private static List<int> BinarySearchTree(int[] nodes)
-        {
-            List<int> tree = new List<int>();
-            int pointer = 0;
-            int Left = 0;
-            int right = 0;
-
-            for (int i = 0; i < nodes.Length; i++)
-            {
-                if (i == 0)
-                {
-                    tree.Add(nodes[0]);
-                }
-                else
-                {
-                    if ((nodes[i] > tree[pointer] && right == 1) || (nodes[i] < tree[pointer] && Left == 1))
-                    {
-                        pointer = tree.Count - 1;
-                        Left = 0;
-                        right = 0;
-                    }
-
-                    if (nodes[i] < tree[pointer]) //left
-                    {
-                        int indexNumber = 2 * pointer + 1;
-                        int emptySpots;
-                        if (indexNumber == tree.Count)
-                        {
-                            emptySpots = 0;
-                        }
-                        else
-                        {
-                            emptySpots = indexNumber - tree.Count;
-                        }
-
-                        if (indexNumber < tree.Count)
-                        {
-                            tree[indexNumber] = nodes[i];
-                        }
-                        else
-                        {
-                            for (int j = 0; j < emptySpots; j++)
-                            {
-                                tree.Add(0);
-                            }
-                            tree.Add(nodes[i]);
-                        }
-                        Left++;
-                    }
-                    else // right
-                    {
-                        int indexNumber = 2 * pointer + 2;
-                        int emptySpots = indexNumber - tree.Count;
-                        for (int j = 0; j < emptySpots; j++)
-                        {
-                            tree.Add(0);
-                        }
-                        tree.Add(nodes[i]);
-                        right++;
-                    }
-                }
-            }
-
-            // return a binary Tree Array
-            return tree;
-        }
-
     }
 }
