@@ -34,7 +34,19 @@ namespace hw1
 #if (true)
         static void Main(string[] args)
         {
-            Console.WriteLine("Approach 3 (time loop, subtract overhead): " + TimeTest.TimeAnaga(2).ToString("G2"));
+            Console.WriteLine("Approach 3 (time loop, subtract overhead): " + TimeTest.TimeAnaga(10, 5).ToString());
+            Console.WriteLine();
+            Console.WriteLine("Approach 3 (time loop, subtract overhead): " + TimeTest.TimeAnaga(20, 5).ToString());
+            Console.WriteLine();
+            Console.WriteLine("Approach 3 (time loop, subtract overhead): " + TimeTest.TimeAnaga(40, 5).ToString());
+            Console.WriteLine();
+            Console.WriteLine("Approach 3 (time loop, subtract overhead): " + TimeTest.TimeAnaga(80, 5).ToString());
+            Console.WriteLine();
+            Console.WriteLine("Approach 3 (time loop, subtract overhead): " + TimeTest.TimeAnaga(160, 5).ToString());
+            Console.WriteLine();
+            Console.WriteLine("Approach 3 (time loop, subtract overhead): " + TimeTest.TimeAnaga(320, 5).ToString());
+            Console.WriteLine();
+
             Console.ReadLine();
         }
 #endif

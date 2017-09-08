@@ -27,17 +27,25 @@ namespace hw1
             return (((double)sw.ElapsedTicks) / Stopwatch.Frequency) * 1000;
         }
 
-        public static double TimeAnaga(int size)
+        public static double TimeAnaga(int n, int k)
         {
             // Construct anagrams
             List<string> input = new List<string>();
-            input.Add("6 4");
-            input.Add("tape");
-            input.Add("rate");
-            input.Add("seat");
-            input.Add("pate");
-            input.Add("east");
-            input.Add("pest");
+            Random rand = new Random();
+            char[] alpha = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
+
+            input.Add(n + " " + k);
+            for (int i = 0; i < n; i++)
+            {
+                StringBuilder word = new StringBuilder();
+                for (int j = 0; j < k; j++)
+                {
+                    int index = rand.Next(0, 23);
+                    char letter = alpha[index];
+                    word.Append(letter);
+                }
+                input.Add( word.ToString() );
+            }
 
             // Create a stopwatch
             Stopwatch sw = new Stopwatch();
