@@ -39,7 +39,7 @@ namespace hw2
             int[] nodes = s.Split(new[] {'\t', ' ' }).Select(n => Convert.ToInt32(n)).ToArray();
 
             // makes a binary search Tree Array
-            List<int> binaryTreeArray = BinarySearchTree(nodes);
+            List<int> binaryTreeArray = MakeBinarytree(nodes);
 
             // add unique trees to uniqueTrees (dictionary)
             if (uniqueTrees.ContainsKey(binaryTreeArray.Count))
@@ -51,6 +51,78 @@ namespace hw2
                 uniqueTrees.Add(binaryTreeArray.Count, binaryTreeArray);
             }
         }
+
+        public static List<int> MakeBinarytree(int[] nodes)
+        {
+            List<int> tree = new List<int>();
+
+            for (int i = 0; i < nodes.Length; i++)
+            {
+                if (i == 0)
+                {
+                    tree.Add(nodes[0]);
+                }
+                else if(nodes[i] < tree[0])
+                {
+                    AddHeap(2 * 0 + 1, ref tree, nodes[i]);
+                }
+                else
+                {
+                    AddHeap(2 * 0 + 2, ref tree, nodes[i]);
+                }
+            }
+                return tree;
+        }
+
+        public static void AddHeap(int index, ref List<int> tree, int number)
+        {
+            if(tree.Count <= index)
+            {
+                if(index == tree.Count)
+                {
+                    tree.Add(number);
+                }
+                else
+                {
+                    int emptySpots = index - tree.Count;
+                    for (int j = 0; j < emptySpots; j++)
+                    {
+                        tree.Add(0);
+                    }
+                    tree.Add(number);
+                }
+                
+            }
+            else if(tree.Count > index && tree[index] == 0)
+            {
+                tree[index] = number;
+            }
+            else
+            {
+                if(number < tree[index])
+                {
+                    index = 2 * index + 1;
+                    AddHeap(index, ref tree, number);
+                }
+                else
+                {
+                    index = 2 * index + 2;
+                    AddHeap(index, ref tree, number);
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
 
         private static List<int> BinarySearchTree(int[] nodes)
         {
@@ -67,7 +139,7 @@ namespace hw2
                 }
                 else
                 {
-                    if ( (nodes[i] > tree[pointer] && right == 1) || ( nodes[i] < tree[pointer] && Left == 1) )
+                    if ((nodes[i] > tree[pointer] && right == 1) || (nodes[i] < tree[pointer] && Left == 1))
                     {
                         pointer = tree.Count - 1;
                         Left = 0;
@@ -89,7 +161,7 @@ namespace hw2
 
                         if (indexNumber < tree.Count)
                         {
-                            tree[indexNumber]  = nodes[i];
+                            tree[indexNumber] = nodes[i];
                         }
                         else
                         {
@@ -118,5 +190,6 @@ namespace hw2
             // return a binary Tree Array
             return tree;
         }
+
     }
 }
