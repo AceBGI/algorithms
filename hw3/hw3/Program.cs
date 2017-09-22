@@ -17,9 +17,8 @@ namespace hw3
 
             string firstLine = Console.ReadLine();
             string[] numbers = firstLine.Split(new[] { '\t', ' ' });
-            int d;
+            BigInteger d = BigInteger.Parse(numbers[0]);
             int k;
-            Int32.TryParse(numbers[0], out d);
             Int32.TryParse(numbers[1], out k);
 
             for (int i = 0; i < k; i++)
@@ -40,7 +39,7 @@ namespace hw3
                     int index = 0;
                     foreach (Galaxy gal in galaxyArray)
                     {
-                        if( ((s.X - gal.LeadStar.X)*(s.X - gal.LeadStar.X)) + ((s.Y - gal.LeadStar.Y)*(s.Y - gal.LeadStar.Y)) <= d * d)
+                        if ( ((s.X - gal.LeadStar.X)*(s.X - gal.LeadStar.X)) + ((s.Y - gal.LeadStar.Y)*(s.Y - gal.LeadStar.Y)) <= d * d)
                         {
                             gal.Count++;
                             hasGalaxy = true;
