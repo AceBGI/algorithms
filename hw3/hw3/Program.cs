@@ -44,7 +44,7 @@ namespace hw3
                             gal.Count++;
                             hasGalaxy = true;
 
-                            if(gal.Count > k/2 && hasHalf == true)
+                            if(gal.Count > k/2)
                             {
                                 hasHalf = true;
                                 theChoosenOne = index;
@@ -66,7 +66,7 @@ namespace hw3
                 Console.WriteLine(galaxyArray[theChoosenOne].Count);
             else
                 Console.WriteLine("NO");
-            //Console.ReadLine();
+            Console.ReadLine();
         }
 
         static Star Cordnates(string line)
