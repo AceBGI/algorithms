@@ -45,32 +45,31 @@ namespace hw2
             // add unique trees to uniqueTrees (dictionary)
             if (uniqueTrees.ContainsKey(binaryTreeArray.Count))
             {
-                bool exit = false;
-                bool addList = false;
+                bool same = false;
+                int numSame = 0;
 
                 foreach (List<int> item in uniqueTrees[binaryTreeArray.Count])
                 {
-                    if(exit == true)
-                    {
-                        break;
-                    }
-
                     for (int i = 0; i < item.Count; i++)
                     {
                         if( (binaryTreeArray[i] != 0 && item[i] != 0) || (binaryTreeArray[i] == 0 && item[i] == 0))
                         {
-                            // do nothing
+                            same = true;
+
                         }
                         else
                         {
-                            
-                            exit = true;
-                            addList = true;
+                            same = false;
                             break;
                         }
                     }
+                    if (same == true)
+                    {
+                        numSame = 1;
+                        break;
+                    }
                 }
-                if(addList == true)
+                if(numSame != 1)
                 {
                     uniqueTrees[binaryTreeArray.Count].AddLast(binaryTreeArray);
                     NumberOfUnique++;
