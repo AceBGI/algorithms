@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Numerics;
 
 namespace hw3
 {
@@ -11,14 +12,15 @@ namespace hw3
         static void Main(string[] args)
         {
             List<Galaxy> galaxyArray = new List<Galaxy>();
+            bool hasHalf = false;
+            int theChoosenOne = 0;
+
             string firstLine = Console.ReadLine();
             string[] numbers = firstLine.Split(new[] { '\t', ' ' });
             int d;
             int k;
             Int32.TryParse(numbers[0], out d);
             Int32.TryParse(numbers[1], out k);
-            bool hasHalf = false;
-            int theChoosenOne = 0;
 
             for (int i = 0; i < k; i++)
             {
@@ -43,7 +45,7 @@ namespace hw3
                             gal.Count++;
                             hasGalaxy = true;
 
-                            if(gal.Count > k/2)
+                            if(gal.Count > k/2 && hasHalf == true)
                             {
                                 hasHalf = true;
                                 theChoosenOne = index;
@@ -71,10 +73,8 @@ namespace hw3
         static Star Cordnates(string line)
         {
             string[] numbers = line.Split(new[] { '\t', ' ' });
-            int x;
-            int y;
-            Int32.TryParse(numbers[0], out x);
-            Int32.TryParse(numbers[1], out y);
+            BigInteger x = BigInteger.Parse(numbers[0]);
+            BigInteger y = BigInteger.Parse(numbers[1]);
 
             Star newStar = new Star();
             newStar.X = x;
@@ -91,7 +91,7 @@ namespace hw3
 
     class Star
     {
-        public int X { get; set; }
-        public int Y { get; set; }
+        public BigInteger X { get; set; }
+        public BigInteger Y { get; set; }
     }
 }
