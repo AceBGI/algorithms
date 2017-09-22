@@ -39,7 +39,7 @@ namespace hw2
         {
             int[] nodes = s.Split(new[] {'\t', ' ' }).Select(n => Convert.ToInt32(n)).ToArray();
 
-            // makes a binary search Tree Array
+            // makes a binary search Tree Array 
             List<int> binaryTreeArray = MakeBinarytree(nodes);
 
             // add unique trees to uniqueTrees (dictionary)
