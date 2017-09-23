@@ -11,9 +11,9 @@ namespace hw3
     {
         static void Main(string[] args)
         {
-            List<Galaxy> galaxyArray = new List<Galaxy>();
+            Tree galaxyTree = new Tree();
+            Node root = null;
             bool hasHalf = false;
-            int theChoosenOne = 0;
 
             string firstLine = Console.ReadLine();
             string[] numbers = firstLine.Split(new[] { '\t', ' ' });
@@ -26,44 +26,24 @@ namespace hw3
                 string line = Console.ReadLine();
                 Star s = Cordnates(line);
 
-                if(galaxyArray.Count == 0)
+                if(galaxyTree.Count == 0)
                 {
-                    Galaxy newGalaxy = new Galaxy();
-                    newGalaxy.LeadStar = s;
-                    newGalaxy.Count++;
-                    galaxyArray.Add(newGalaxy);
+                    root = galaxyTree.insert(root, s, d, ref hasHalf, k);
+                }
+                else if(hasHalf == true)
+                {
+                    if(((s.X - galaxyTree.megaGalaxy.LeadStar.X) * (s.X - galaxyTree.megaGalaxy.LeadStar.X)) + ((s.Y - galaxyTree.megaGalaxy.LeadStar.Y) * (s.Y - galaxyTree.megaGalaxy.LeadStar.Y)) <= d * d)
+                        {
+                            galaxyTree.megaGalaxy.Count++;
+                        }
                 }
                 else
                 {
-                    bool hasGalaxy = false;
-                    int index = 0;
-                    foreach (Galaxy gal in galaxyArray)
-                    {
-                        if ( ((s.X - gal.LeadStar.X)*(s.X - gal.LeadStar.X)) + ((s.Y - gal.LeadStar.Y)*(s.Y - gal.LeadStar.Y)) <= d * d)
-                        {
-                            gal.Count++;
-                            hasGalaxy = true;
-
-                            if(gal.Count > k/2)
-                            {
-                                hasHalf = true;
-                                theChoosenOne = index;
-                            }
-                        }
-                        index++;
-                    }
-
-                    if(hasGalaxy == false)
-                    {
-                        Galaxy newGalaxy = new Galaxy();
-                        newGalaxy.LeadStar = s;
-                        newGalaxy.Count++;
-                        galaxyArray.Add(newGalaxy);
-                    }
+                    galaxyTree.insert(root, s, d, ref hasHalf, k);
                 }
             }
             if(hasHalf == true)
-                Console.WriteLine(galaxyArray[theChoosenOne].Count);
+                Console.WriteLine(galaxyTree.megaGalaxy.Count);
             else
                 Console.WriteLine("NO");
             Console.ReadLine();
@@ -78,6 +58,7 @@ namespace hw3
             Star newStar = new Star();
             newStar.X = x;
             newStar.Y = y;
+            newStar.Pos = ((newStar.X - 0) * (newStar.X - 0)) + ((newStar.Y - 0) * (newStar.Y - 0));
             return newStar;
         }
     }
@@ -86,11 +67,60 @@ namespace hw3
     {
         public int Count { get; set; }
         public Star LeadStar { get; set; }
+        public int index { get; set; }
     }
 
     class Star
     {
         public BigInteger X { get; set; }
         public BigInteger Y { get; set; }
+        public BigInteger Pos { get; set; }
+    }
+
+    class Node
+    {
+        public Galaxy data;
+        public Node left;
+        public Node right;
+    }
+
+    class Tree
+    {
+        public int Count { get; set; }
+        public Galaxy megaGalaxy { get; set; }
+
+        public Node insert(Node root, Star s, BigInteger d, ref bool hasHalf, int k)
+        {
+            if (root == null)
+            {
+                root = new Node();
+                Galaxy newGalaxy = new Galaxy();
+                newGalaxy.LeadStar = s;
+                newGalaxy.index = Count;
+                newGalaxy.Count++;
+                root.data = newGalaxy;
+                Count++;
+            }
+            else if (((s.X - root.data.LeadStar.X) * (s.X - root.data.LeadStar.X)) + ((s.Y - root.data.LeadStar.Y) * (s.Y - root.data.LeadStar.Y)) <= d * d)
+            {
+                root.data.Count++;
+                if(root.data.Count > k / 2)
+                {
+                    hasHalf = true;
+                    megaGalaxy = root.data;
+                }
+                return root;
+            }
+            else if (s.Pos < root.data.LeadStar.Pos)
+            {
+                root.left = insert(root.left, s, d, ref hasHalf, k);
+            }
+            else
+            {
+                root.right = insert(root.right, s, d, ref hasHalf, k);
+            }
+
+            return root;
+        }
     }
 }
