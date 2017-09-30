@@ -111,7 +111,7 @@ namespace hw4
             Cities[v].Pre = count;
             count++;
 
-            foreach (var edge in adjacencyList[v])
+            foreach (Edge edge in adjacencyList[v])
             {
                 if (!edge.Destination.Visited)
                     explore(edge.Destination.Name, count);
@@ -120,8 +120,26 @@ namespace hw4
             Cities[v].Post = count;
         }
 
-        public static int MinimumToll(string start, string end)
+        public static int MinimumToll(string start, string end, int coast)
         {
+            Queue<Vertex> Q = new Queue<Vertex>();
+            Vertex startPoint = Cities[start];
+            startPoint.Cost = 0;
+            Q.Enqueue(startPoint);
+
+            while (Q.Count != 0)
+            {
+                Vertex u = Q.Dequeue();
+                foreach (Edge edge in adjacencyList[u.Name])
+                {
+                    if(edge.Destination.Cost == -1)
+                    {
+                        Q.Enqueue(edge.Destination);
+                        Cities[edge.Destination.Name].Cost = u.Cost + Cities[edge.Destination.Name].Toll;
+                        Cities[edge.Destination.Name].Prev = u;
+                    }
+                }
+            }
             return 0;
         }
     }
@@ -134,6 +152,9 @@ namespace hw4
         public int Pre { get; set; }
         public int Post { get; set; }
         public bool Visited { get; set; } = false;
+
+        public Vertex Prev { get; set; } = null;
+        public int Cost { get; set; } = -1;
     }
 
     public class Edge
