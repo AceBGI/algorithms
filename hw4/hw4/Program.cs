@@ -80,8 +80,10 @@ namespace hw4
                 if (start == end)
                     result = "0";
                 // starting from a sink
-                if (adjacencyList[start] == null)
+                else if (adjacencyList[start] == null)
                     result = "0";
+                else if (Cities[start].Post > Cities[end].Post)
+                    
 
                 Console.WriteLine(result);
             }
@@ -116,6 +118,11 @@ namespace hw4
             }
             count++;
             Cities[v].Post = count;
+        }
+
+        public static int MinimumToll(string start, string end)
+        {
+            return 0;
         }
     }
 
