@@ -63,10 +63,12 @@ namespace hw4
             int t;
             Int32.TryParse(nextline2, out t);
             proposedTrip(t);
+            Console.ReadLine();
         }
 
         public static void proposedTrip(int t)
         {
+            List<string> resultList = new List<string>();
             TopologicalSort(Cities.First().Value.Name);
             for (int i = 0; i < t; i++)
             {
@@ -81,11 +83,17 @@ namespace hw4
                     result = "0";
                 // starting from a sink
                 else if (adjacencyList[start] == null)
-                    result = "0";
+                    result = "NO";
                 else if (Cities[start].Post > Cities[end].Post)
-                    
+                    result = MinimumToll(start, end).ToString();
 
-                Console.WriteLine(result);
+                resultList.Add(result);
+            }
+
+            // print out answer
+            for (int i = 0; i < t; i++)
+            {
+                Console.WriteLine(resultList[i]);
             }
         }
 
@@ -96,7 +104,7 @@ namespace hw4
             foreach (Vertex city in Cities.Values)
             {
                 if (!city.Visited)
-                    explore(start, count);
+                    explore(city.Name, ref count);
             }
         }
 
@@ -105,42 +113,60 @@ namespace hw4
         /// </summary>
         /// <param name="v"></param>
         /// <param name="count"></param>
-        public static void explore(string v, int count)
+        public static void explore(string v, ref int count)
         {
             Cities[v].Visited = true;
-            Cities[v].Pre = count;
-            count++;
+            Cities[v].Pre = count++;
 
-            foreach (Edge edge in adjacencyList[v])
+
+            if(adjacencyList[v] != null)
             {
-                if (!edge.Destination.Visited)
-                    explore(edge.Destination.Name, count);
+                foreach (var edge in adjacencyList[v])
+                {
+                    if (!edge.Destination.Visited)
+                        explore(edge.Destination.Name, ref count);
+                }
             }
-            count++;
-            Cities[v].Post = count;
+            Cities[v].Post = count++;
+
+            
         }
 
-        public static int MinimumToll(string start, string end, int coast)
+        public static int MinimumToll(string start, string end)
         {
             Queue<Vertex> Q = new Queue<Vertex>();
             Vertex startPoint = Cities[start];
             startPoint.Cost = 0;
             Q.Enqueue(startPoint);
+            int smallest = 0;
 
             while (Q.Count != 0)
             {
                 Vertex u = Q.Dequeue();
-                foreach (Edge edge in adjacencyList[u.Name])
+                if(adjacencyList[u.Name] != null)
                 {
-                    if(edge.Destination.Cost == -1)
+                    foreach (Edge edge in adjacencyList[u.Name])
                     {
-                        Q.Enqueue(edge.Destination);
+                        if(edge.Destination.Cost == -1)
+                        {
+                            Q.Enqueue(edge.Destination);
+                            Cities[edge.Destination.Name].Prev = u;
+                        }
+
                         Cities[edge.Destination.Name].Cost = u.Cost + Cities[edge.Destination.Name].Toll;
-                        Cities[edge.Destination.Name].Prev = u;
+
+                        if (Cities[edge.Destination.Name].Name == end && smallest == 0)
+                        {
+                            smallest = Cities[edge.Destination.Name].Cost;
+                        }
+                        else if (Cities[edge.Destination.Name].Name == end && Cities[edge.Destination.Name].Cost < smallest)
+                        {
+                            smallest = Cities[edge.Destination.Name].Cost;
+                        }
                     }
                 }
             }
-            return 0;
+            return smallest;
         }
     }
 
