@@ -10,6 +10,7 @@ namespace hw4
     {
         public static Dictionary<string, Vertex> Cities = new Dictionary<string, Vertex>();
         public static Dictionary<string, LinkedList<Edge>> adjacencyList = new Dictionary<string, LinkedList<Edge>>();
+        public static List<Vertex> topologicalList = new List<Vertex>();
 
         static void Main(string[] args)
         {
@@ -42,7 +43,6 @@ namespace hw4
                 string line = Console.ReadLine();
                 string[] path = line.Split(new[] { '\t', ' ' });
                 Edge newEdge = new Edge();
-                newEdge.Start = Cities[path[0]];
                 newEdge.Destination = Cities[path[1]];
 
                 // if null make new linked list
@@ -78,15 +78,24 @@ namespace hw4
                 string end = trips[1];
                 string result = "NO";
 
+                if (!Cities.ContainsKey(start) || !Cities.ContainsKey(end))
+                    result = "NO";
                 // loops to it's self
-                if (start == end)
+                else if (start == end)
                     result = "0";
                 // starting from a sink
                 else if (adjacencyList[start] == null)
                     result = "NO";
                 else if (Cities[start].Post > Cities[end].Post)
-                    result = MinimumToll(start, end).ToString();
-
+                {
+                    //  if (Cities[start].Pre < Cities[end].Post && Cities[start].Post > Cities[end].Pre)
+                    MinimumToll(start, end);
+                    Vertex sink = Cities[end];
+                    if (sink.Cost == Int32.MaxValue)
+                        result = "NO";
+                    else
+                        result = sink.Cost.ToString();
+                }        
                 resultList.Add(result);
             }
 
@@ -128,45 +137,41 @@ namespace hw4
                 }
             }
             Cities[v].Post = count++;
+            topologicalList.Add(Cities[v]);
 
-            
+
         }
 
-        public static int MinimumToll(string start, string end)
+        public static void MinimumToll(string start, string end)
         {
-            Queue<Vertex> Q = new Queue<Vertex>();
+            int inf = Int32.MaxValue;
+            foreach (Vertex city in Cities.Values)
+            {
+                city.Cost = inf;
+                city.Prev = null;
+            }
+
+            Stack<Vertex> stack = new Stack<Vertex>();
+            foreach (Vertex v in topologicalList)
+            {
+                stack.Push(v);
+            }
             Vertex startPoint = Cities[start];
             startPoint.Cost = 0;
-            Q.Enqueue(startPoint);
-            int smallest = 0;
+            
 
-            while (Q.Count != 0)
+            while (stack.Count != 0)
             {
-                Vertex u = Q.Dequeue();
-                if(adjacencyList[u.Name] != null)
+                Vertex u = stack.Pop();
+                if (u.Cost != inf && adjacencyList[u.Name] != null)
                 {
                     foreach (Edge edge in adjacencyList[u.Name])
                     {
-                        if(edge.Destination.Cost == -1)
-                        {
-                            Q.Enqueue(edge.Destination);
-                            Cities[edge.Destination.Name].Prev = u;
-                        }
-
-                        Cities[edge.Destination.Name].Cost = u.Cost + Cities[edge.Destination.Name].Toll;
-
-                        if (Cities[edge.Destination.Name].Name == end && smallest == 0)
-                        {
-                            smallest = Cities[edge.Destination.Name].Cost;
-                        }
-                        else if (Cities[edge.Destination.Name].Name == end && Cities[edge.Destination.Name].Cost < smallest)
-                        {
-                            smallest = Cities[edge.Destination.Name].Cost;
-                        }
+                        if (Cities[edge.Destination.Name].Cost > u.Cost + Cities[edge.Destination.Name].Toll)
+                            Cities[edge.Destination.Name].Cost = u.Cost + Cities[edge.Destination.Name].Toll;
                     }
                 }
-            }
-            return smallest;
+            } 
         }
     }
 
@@ -180,12 +185,11 @@ namespace hw4
         public bool Visited { get; set; } = false;
 
         public Vertex Prev { get; set; } = null;
-        public int Cost { get; set; } = -1;
+        public int Cost { get; set; } = Int32.MaxValue;
     }
 
     public class Edge
     {
         public Vertex Destination { get; set; }
-        public Vertex Start { get; set; }
     }
 }
