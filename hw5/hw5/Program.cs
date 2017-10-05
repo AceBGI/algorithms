@@ -30,7 +30,7 @@ namespace hw5
                 Student newStudent = new Student();
                 newStudent.Name = line;
                 Students.Add(line, newStudent);
-                Friends.Add(line, null);
+                Friends.Add(line, new LinkedList<Student>());
             }
 
             string numberOffriends = Console.ReadLine();
@@ -50,21 +50,32 @@ namespace hw5
             int r;
             Int32.TryParse(reportNumber, out r);
 
-            List<SortedSet<string>> Days = new List<SortedSet<string>>();
+            List<string> reports = new List<string>();
             for (int i = 0; i < r; i++)
             {
                 string line = Console.ReadLine();
-                SortedSet<string> day = Report(line);
-                Days.Add(day);
+                List<SortedSet<string>> report = Report(line);
+                StringBuilder outputLine = new StringBuilder();
+                foreach (SortedSet<string> list in report)
+                {
+                    foreach (string item in list)
+                    {
+                        outputLine.Append(item);
+                        outputLine.Append(" ");
+                    }
+                }
+                reports.Add(outputLine.ToString());
             }
 
-            foreach (SortedSet<string> day in Days)
+            //Console.WriteLine();
+            foreach (string item in reports)
             {
-                
+                Console.WriteLine(item);
             }
+            //Console.ReadLine();
         }
 
-        private static SortedSet<string> Report(string name)
+        private static List<SortedSet<string>> Report(string name)
         {
  
             int inf = Int32.MaxValue;
@@ -82,20 +93,21 @@ namespace hw5
             while (Q.Count != 0)
             {
                 Student u = Q.Dequeue();
-                if (u.Day != inf)
+               
+                foreach (Student edge in Friends[u.Name])
                 {
-                    foreach (Student edge in Friends[u.Name])
+                    if (edge.Day == inf)
                     {
                         edge.Day = u.Day + 1;
                         Q.Enqueue(edge);
                     }
-                    countOfDays++;
                 }
+                countOfDays++;
             }
 
             // create days list
             List<SortedSet<string>> days = new List<SortedSet<string>>();
-            for (int i = 0; i < countOfDays; i++)
+            for (int i = 0; i < countOfDays + 1; i++)
             {
                 days.Add(new SortedSet<string>());
             }
@@ -103,18 +115,27 @@ namespace hw5
             // go through all of the students and them to the correct day list.
             foreach (Student student in Students.Values)
             {
+                bool flag = false;
                 for (int i = 0; i < countOfDays; i++)
                 {
-                    if(student.Day == i)
+                    if (student.Day == inf)
+                    {
+                        days[countOfDays].Add(student.Name);
+                        flag = true;
+                        break;
+                    }
+                    else if (student.Day == i)
                     {
                         days[i].Add(student.Name);
+                        flag = true;
                         break;
                     }
                 }
+                if (flag) continue;
             }
             
 
-            return friendsList;
+            return days;
         }
     }
 }
