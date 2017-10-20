@@ -28,24 +28,17 @@ namespace hw6
                 }
                 else
                 {
-                    corridor c1 = new corridor();
-                    c1.Name = 0 + "" + 0;
-                    c1.X = 0;
-                    c1.Y = 0;
-                    c1.F = 0.0;
-                    corridors.Add(c1.Name, c1);
-                    LinkedList<corridor> l = new LinkedList<corridor>();
-                    adjacencyList.Add(c1.Name, l);
+                    
                     for (int i = 0; i < m; i++)
                     {
                         int x;
                         int y;
                         double f;
                         string line = Console.ReadLine();
-                        string[] cityInfo = line.Split(new[] { '\t', ' ' });
-                        Int32.TryParse(cityInfo[0], out x);
-                        Int32.TryParse(cityInfo[1], out y);
-                        double.TryParse(cityInfo[2], out f);
+                        string[] lineArray = line.Split(new[] { '\t', ' ' });
+                        Int32.TryParse(lineArray[0], out x);
+                        Int32.TryParse(lineArray[1], out y);
+                        double.TryParse(lineArray[2], out f);
 
                         corridor c = new corridor();
                         c.Name = x + "" + y;
@@ -80,7 +73,7 @@ namespace hw6
             {
                 Console.WriteLine(string.Format("{0:f4}", item));
             }
-            //Console.ReadLine();
+            Console.ReadLine();
         }
 
         private static decimal Dijkstra(string start, int end)
@@ -91,6 +84,7 @@ namespace hw6
                 dist.Add(item, 0.0);
             }
             dist[start] = 1.0;
+            corridors[start].F = 1;
 
             PriorityQueue<double, corridor> PQ = new PriorityQueue<double, corridor>();
             PQ.InsertOrChange(1.0, corridors[start]);
@@ -99,17 +93,24 @@ namespace hw6
             {
                 KeyValuePair<double,corridor> u = PQ.Dequeue();
 
+                if (Math.Abs(dist[u.Value.Name] - dist[u.Value.Name]) > 0.00000000000000001)
+                {
+                    continue;
+                }
+
                 foreach (var edge in adjacencyList[u.Value.Name])
                 {
-                    if (dist[edge.Name] < dist[u.Value.Name] * edge.F)
+
+
+                    if (dist[edge.Name] < u.Value.F * edge.F)
                     {
-                        dist[edge.Name] = dist[u.Value.Name] * edge.F;
+                        dist[edge.Name] = u.Value.F * edge.F;
                         PQ.InsertOrChange(dist[edge.Name], edge);
                     }
                 }
             }
 
-            decimal d = Convert.ToDecimal(dist.ElementAt(end - 1).Value);
+            decimal d = Convert.ToDecimal(dist.ElementAt(end).Value);
             return d;
         }
     }
