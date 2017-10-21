@@ -8,7 +8,7 @@ namespace hw6
 {
     class Program
     {
-        static Dictionary<string, LinkedList<corridor>> adjacencyList = new Dictionary<string, LinkedList<corridor>>();
+        static Dictionary<int, LinkedList<corridor>> adjacencyList = new Dictionary<int, LinkedList<corridor>>();
         static Dictionary<string, corridor> corridors = new Dictionary<string, corridor>();
         static void Main(string[] args)
         {
@@ -40,25 +40,32 @@ namespace hw6
                         Int32.TryParse(lineArray[1], out y);
                         double.TryParse(lineArray[2], out f);
 
-                        corridor c = new corridor();
-                        c.Name = x + "" + y;
-                        c.X = x;
-                        c.Y = y;
-                        c.F = f;
-                       
-                        LinkedList<corridor> newLinkList = new LinkedList<corridor>();
-                        adjacencyList.Add(c.Name, newLinkList);
+                        corridor c1 = new corridor();
+                        c1.Name = x + "" + y;
+                        c1.X = x;
+                        c1.Y = y;
+                        c1.F = f;
+                        c1.Next = y;
+                        if(corridors.ContainsKey(c1.Name) == false)
+                            corridors.Add(c1.Name, c1);
 
-                        foreach (var cor in corridors.Values)
-                        {
-                            if(c.X == cor.X || c.Y == cor.Y || c.X == cor.Y)
-                            {
-                                adjacencyList[cor.Name].AddLast(c);
-                                adjacencyList[c.Name].AddLast(cor);
-                            }
+                        corridor c2 = new corridor();
+                        c2.Name = y + "" + x;
+                        c2.X = x;
+                        c2.Y = y;
+                        c2.F = f;
+                        c2.Next = x;
+                        if (corridors.ContainsKey(c2.Name) == false)
+                            corridors.Add(c2.Name, c2);
 
-                        }
-                        corridors.Add(c.Name, c);
+                        if (adjacencyList.ContainsKey(x) == false)
+                            adjacencyList.Add(x, new LinkedList<corridor>());
+                        if (adjacencyList.ContainsKey(y) == false)
+                            adjacencyList.Add(y, new LinkedList<corridor>());
+
+                        adjacencyList[x].AddLast(c1);
+                        adjacencyList[y].AddLast(c2);
+
                     }
 
                     decimal num = Dijkstra(corridors.First().Value.Name, corridors.Count - 1);
@@ -78,12 +85,12 @@ namespace hw6
 
         private static decimal Dijkstra(string start, int end)
         {
-            Dictionary<string, double> dist = new Dictionary<string, double>();
-            foreach (string item in corridors.Keys)
+            Dictionary<int, double> dist = new Dictionary<int, double>();
+            foreach (KeyValuePair<int, LinkedList<corridor>> entry in adjacencyList)
             {
-                dist.Add(item, 0.0);
+                dist.Add(entry.Key, 0.0);
             }
-            dist[start] = 1.0;
+            dist[0] = 1.0;
             corridors[start].F = 1;
 
             PriorityQueue<double, corridor> PQ = new PriorityQueue<double, corridor>();
@@ -93,19 +100,19 @@ namespace hw6
             {
                 KeyValuePair<double,corridor> u = PQ.Dequeue();
 
-                if (Math.Abs(dist[u.Value.Name] - dist[u.Value.Name]) > 0.00000000000000001)
+                if (Math.Abs(dist[u.Value.Next] - dist[u.Value.Next]) > 0.00000000000000001)
                 {
                     continue;
                 }
 
-                foreach (var edge in adjacencyList[u.Value.Name])
+                foreach (var edge in adjacencyList[u.Value.Next])
                 {
 
 
-                    if (dist[edge.Name] < u.Value.F * edge.F)
+                    if (dist[edge.Next] < u.Value.F * edge.F)
                     {
-                        dist[edge.Name] = u.Value.F * edge.F;
-                        PQ.InsertOrChange(dist[edge.Name], edge);
+                        dist[edge.Next] = u.Value.F * edge.F;
+                        PQ.InsertOrChange(dist[edge.Next], edge);
                     }
                 }
             }
@@ -123,6 +130,7 @@ namespace hw6
         public corridor Prev { get; set; }
         public double Dist { get; set; }
         public string Name { get; set; }
+        public int Next { get; set; }
     }
 
     public class PriorityQueue<TPriority, TValue>
