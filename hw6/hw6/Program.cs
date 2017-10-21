@@ -16,11 +16,12 @@ namespace hw6
             bool loop = true;
             while (loop)
             {
-                string firstLine = Console.ReadLine();
+                string line = Console.ReadLine();
+                string[] flineArray = line.Split(new[] { '\t', ' ' });
                 int n;
                 int m;
-                Int32.TryParse(firstLine[0].ToString(), out n);
-                Int32.TryParse(firstLine[2].ToString(), out m);
+                Int32.TryParse(flineArray[0].ToString(), out n);
+                Int32.TryParse(flineArray[1].ToString(), out m);
 
                 if(n == 0 && m == 0)
                 {
@@ -28,13 +29,13 @@ namespace hw6
                 }
                 else
                 {
-                    
-                    for (int i = 0; i < m; i++)
+
+                    for(int i = 0; i<m; i++)
                     {
                         int x;
                         int y;
                         double f;
-                        string line = Console.ReadLine();
+                        line = Console.ReadLine();
                         string[] lineArray = line.Split(new[] { '\t', ' ' });
                         Int32.TryParse(lineArray[0], out x);
                         Int32.TryParse(lineArray[1], out y);
@@ -68,7 +69,7 @@ namespace hw6
 
                     }
 
-                    decimal num = Dijkstra(corridors.First().Value.Name, corridors.Count - 1);
+                    decimal num = Dijkstra(corridors.First().Value.Name, n - 1);
                     output.Add(num);
                     // clear intersects Dict
                     corridors.Clear();
@@ -91,7 +92,6 @@ namespace hw6
                 dist.Add(entry.Key, 0.0);
             }
             dist[0] = 1.0;
-            corridors[start].F = 1;
 
             PriorityQueue<double, corridor> PQ = new PriorityQueue<double, corridor>();
             PQ.InsertOrChange(1.0, corridors[start]);
@@ -117,7 +117,7 @@ namespace hw6
                 }
             }
 
-            decimal d = Convert.ToDecimal(dist.ElementAt(end).Value);
+            decimal d = Convert.ToDecimal(dist[end]);
             return d;
         }
     }

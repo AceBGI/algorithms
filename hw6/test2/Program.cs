@@ -85,7 +85,7 @@ namespace GetShorty
                 {
                     Console.Write("(me: " + entry.Value.ElementAt(i).myName + ",  neighbor: " + entry.Value.ElementAt(i).next + " , factor: " + entry.Value.ElementAt(i).factor + ")");
                 }
-                Console.WriteLine();
+                Console.ReadLine();
             }
         }
 
