@@ -50,22 +50,13 @@ namespace hw6
                         if(corridors.ContainsKey(c1.Name) == false)
                             corridors.Add(c1.Name, c1);
 
-                        corridor c2 = new corridor();
-                        c2.Name = y + "" + x;
-                        c2.X = x;
-                        c2.Y = y;
-                        c2.F = f;
-                        c2.Next = x;
-                        if (corridors.ContainsKey(c2.Name) == false)
-                            corridors.Add(c2.Name, c2);
-
                         if (adjacencyList.ContainsKey(x) == false)
                             adjacencyList.Add(x, new LinkedList<corridor>());
                         if (adjacencyList.ContainsKey(y) == false)
                             adjacencyList.Add(y, new LinkedList<corridor>());
 
                         adjacencyList[x].AddLast(c1);
-                        adjacencyList[y].AddLast(c2);
+                        adjacencyList[y].AddLast(c1);
 
                     }
 
@@ -91,7 +82,8 @@ namespace hw6
             {
                 dist.Add(entry.Key, 0.0);
             }
-            dist[0] = 1.0;
+            int begin = dist.ElementAt(0).Key;
+            dist[begin] = 1.0;
 
             PriorityQueue<double, corridor> PQ = new PriorityQueue<double, corridor>();
             PQ.InsertOrChange(1.0, corridors[start]);
@@ -100,15 +92,13 @@ namespace hw6
             {
                 KeyValuePair<double,corridor> u = PQ.Dequeue();
 
-                if (Math.Abs(dist[u.Value.Next] - dist[u.Value.Next]) > 0.00000000000000001)
-                {
-                    continue;
-                }
+                // if (Math.Abs(dist[u.Value.Next] - dist[u.Value.Next]) > 0.00000000000000001)
+                // {
+                //     continue;
+                // }
 
                 foreach (var edge in adjacencyList[u.Value.Next])
                 {
-
-
                     if (dist[edge.Next] < u.Value.F * edge.F)
                     {
                         dist[edge.Next] = u.Value.F * edge.F;
