@@ -23,14 +23,14 @@ namespace hw6
                 Int32.TryParse(flineArray[0].ToString(), out n);
                 Int32.TryParse(flineArray[1].ToString(), out m);
 
-                if(n == 0 && m == 0)
+                if (n == 0 && m == 0)
                 {
                     loop = false;
                 }
                 else
                 {
 
-                    for(int i = 0; i<m; i++)
+                    for (int i = 0; i < m; i++)
                     {
                         int x;
                         int y;
@@ -47,16 +47,37 @@ namespace hw6
                         c1.Y = y;
                         c1.F = f;
                         c1.Next = y;
-                        if(corridors.ContainsKey(c1.Name) == false)
+                        if (corridors.ContainsKey(c1.Name) == false)
                             corridors.Add(c1.Name, c1);
 
                         if (adjacencyList.ContainsKey(x) == false)
                             adjacencyList.Add(x, new LinkedList<corridor>());
+
+                        corridor c2 = new corridor();
+                        c2.Name = y + "" + x;
+                        c2.X = y;
+                        c2.Y = x;
+                        c2.F = f;
+                        c2.Next = x;
+                        if (corridors.ContainsKey(c2.Name) == false)
+                            corridors.Add(c2.Name, c2);
+
                         if (adjacencyList.ContainsKey(y) == false)
                             adjacencyList.Add(y, new LinkedList<corridor>());
 
                         adjacencyList[x].AddLast(c1);
-                        adjacencyList[y].AddLast(c1);
+                        adjacencyList[y].AddLast(c2);
+
+                        // if (x == y)
+                        // {
+                        //     adjacencyList[x].AddLast(c1);
+                        // }
+                        // else
+                        // {
+                        //     adjacencyList[x].AddLast(c1);
+                        //     adjacencyList[y].AddLast(c2);
+                        // }
+                        
 
                     }
 
@@ -85,24 +106,19 @@ namespace hw6
             int begin = dist.ElementAt(0).Key;
             dist[begin] = 1.0;
 
-            PriorityQueue<double, corridor> PQ = new PriorityQueue<double, corridor>();
-            PQ.InsertOrChange(1.0, corridors[start]);
+            PriorityQueue<double, int> PQ = new PriorityQueue<double, int>();
+            PQ.InsertOrChange(1.0, 0);
 
-            while(!PQ.IsEmpty)
+            while (!PQ.IsEmpty)
             {
-                KeyValuePair<double,corridor> u = PQ.Dequeue();
+                KeyValuePair<double, int> u = PQ.Dequeue();
 
-                // if (Math.Abs(dist[u.Value.Next] - dist[u.Value.Next]) > 0.00000000000000001)
-                // {
-                //     continue;
-                // }
-
-                foreach (var edge in adjacencyList[u.Value.Next])
+                foreach (var edge in adjacencyList[u.Value])
                 {
-                    if (dist[edge.Next] < u.Value.F * edge.F)
+                    if (dist[edge.Next] < dist[u.Value] * edge.F)
                     {
-                        dist[edge.Next] = u.Value.F * edge.F;
-                        PQ.InsertOrChange(dist[edge.Next], edge);
+                        dist[edge.Next] = dist[u.Value] * edge.F;
+                        PQ.InsertOrChange(dist[edge.Next], edge.Next);
                     }
                 }
             }

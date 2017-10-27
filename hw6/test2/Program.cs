@@ -81,11 +81,11 @@ namespace GetShorty
             foreach (KeyValuePair<long, LinkedList<Node3>> entry in g)
             {
                 Console.WriteLine(entry.Key + ": ");
-                for (int i = 0; i < entry.Value.Count; i++)
+                for (int i = 0; i<entry.Value.Count; i++)
                 {
                     Console.Write("(me: " + entry.Value.ElementAt(i).myName + ",  neighbor: " + entry.Value.ElementAt(i).next + " , factor: " + entry.Value.ElementAt(i).factor + ")");
                 }
-                Console.ReadLine();
+                Console.WriteLine();
             }
         }
 
@@ -134,9 +134,9 @@ namespace GetShorty
                     //    pq.insertOrChange(new Node3(v.next), dist[v.next]);
                     //}
                     double a = dist[v.next];
-                    if (dist[v.next] < u.factor * v.factor)
+                    if (dist[v.next] < u.factor* v.factor)
                     {
-                        dist[v.next] = u.factor * v.factor;
+                        dist[v.next] = u.factor* v.factor;
                         pq.insertOrChange(new Node3(v.next), dist[v.next]);
                     }
                 }
@@ -298,4 +298,3 @@ namespace GetShorty
     }
 
 }
-

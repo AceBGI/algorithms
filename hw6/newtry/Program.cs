@@ -4,63 +4,63 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace newtry
+namespace hw6
 {
     class Program
     {
-        /// <summary>
-        /// https://github.com/dklindstrom/GetShorty/blob/master/Dungeon.java
-        /// </summary>
-        static Dictionary<int, LinkedList<corridor>> intersections = new Dictionary<int, LinkedList<corridor>>();
-        static Dictionary<string, corridor> corridors = new Dictionary<string, corridor>();
         static void Main(string[] args)
         {
+            Dictionary<double, LinkedList<corridor>> adjacencyList = new Dictionary<double, LinkedList<corridor>>();
             List<decimal> output = new List<decimal>();
             bool loop = true;
             while (loop)
             {
-                string firstLine = Console.ReadLine();
-                string[] lineInfo = firstLine.Split(new[] { '\t', ' ' });
+                string line = Console.ReadLine();
+                string[] flineArray = line.Split(new[] { '\t', ' ' });
                 int n;
                 int m;
-                Int32.TryParse(lineInfo[0], out n);
-                Int32.TryParse(lineInfo[1], out m);
+                Int32.TryParse(flineArray[0].ToString(), out n);
+                Int32.TryParse(flineArray[1].ToString(), out m);
 
-                if(n == 0 && m == 0)
+                if (n == 0 && m == 0)
                 {
                     loop = false;
                 }
                 else
                 {
-                    for (int i = 0; i<m; i++)
+
+                    for (int i = 0; i < m; i++)
                     {
                         int x;
                         int y;
                         double f;
-                        string line = Console.ReadLine();
-                        string[] cityInfo = line.Split(new[] { '\t', ' ' });
-                        Int32.TryParse(cityInfo[0], out x);
-                        Int32.TryParse(cityInfo[1], out y);
-                        double.TryParse(cityInfo[2], out f);
+                        line = Console.ReadLine();
+                        string[] lineArray = line.Split(new[] { '\t', ' ' });
+                        Int32.TryParse(lineArray[0], out x);
+                        Int32.TryParse(lineArray[1], out y);
+                        double.TryParse(lineArray[2], out f);
 
-                        corridor c = new corridor();
-                        c.Name = x + "" + y;
-                        c.X = x;
-                        c.Y = y;
-                        c.F = f;
-                        corridors.Add(c.Name, c);
+                        if (adjacencyList.ContainsKey(y) == false)
+                        {
+                            LinkedList<corridor> newLL = new LinkedList<corridor>();
+                            adjacencyList.Add(y, newLL);
+                        }
+                        if (adjacencyList.ContainsKey(x) == false)
+                        {
+                            LinkedList<corridor> newLL = new LinkedList<corridor>();
+                            adjacencyList.Add(x, newLL);
+                        }
 
-                        LinkedList<corridor> newLinkList = new LinkedList<corridor>();
-                        newLinkList.AddLast(c);
-                        intersections.Add(x, newLinkList);
-                        intersections.Add(y, newLinkList);
+                        adjacencyList[y].AddLast(new corridor(y, x, f));
+                        adjacencyList[x].AddLast(new corridor(x, y, f));
+
+
                     }
-
-                    decimal num = Dijkstra(corridors.First().Value.Name, corridors.Count - 1);
+                    
+                    decimal num = dijkstra(adjacencyList, 0, n - 1);
                     output.Add(num);
-                    // clear intersects Dict
-                    corridors.Clear();
-                    intersections.Clear();
+                    // clear adjacencyList Dict
+                    adjacencyList.Clear();
                 }
             }
 
@@ -71,165 +71,117 @@ namespace newtry
             Console.ReadLine();
         }
 
-        private static decimal Dijkstra(string start, int end)
+        public static decimal dijkstra(Dictionary<double, LinkedList<corridor>> adjacencyList, double start, int end)
         {
-            Dictionary<string, double> dist = new Dictionary<string, double>();
-            foreach (string item in corridors.Keys)
+            Dictionary<double, double> size = new Dictionary<double, double>();
+
+            foreach (KeyValuePair<double, LinkedList<corridor>> entry in adjacencyList)
             {
-                dist.Add(item, 0.0);
+                size.Add(entry.Key, 0.0);
             }
-            dist[start] = 1.0;
+            size[start] = 1.0;
 
-            PriorityQueue<double,LinkedList < corridor > > PQ = new PriorityQueue<double, LinkedList<corridor> >();
-            PQ.InsertOrChange(1.0, intersections[0]);
+            PriorityQueue pq = new PriorityQueue();
+            pq.insert(new corridor(start), 1.0);
+            pq.firstTime();
 
-            while(!PQ.IsEmpty)
+            while (!pq.isEmpty())
             {
-                KeyValuePair<double, LinkedList<corridor> > u = PQ.Dequeue();
+                corridor u = pq.deleteMax();
 
-                foreach (var edge in u.Value)
+                LinkedList<corridor> edges = adjacencyList[u.next];
+                foreach (corridor v in edges)
                 {
-                    if (dist[edge.Name] < dist[u.Value.Name] * edge.F)
+                    if (size[v.next] < v.f * size[u.next])
                     {
-                        dist[edge.Name] = dist[u.Value.Name] * edge.F;
-                        PQ.InsertOrChange(dist[edge.Name], edge);
+                        size[v.next] = v.f * size[u.next];
+                        pq.insert(new corridor(v.next), size[v.next]);
                     }
                 }
-            }
 
-            decimal d = Convert.ToDecimal(dist.ElementAt(end - 1).Value);
+            }
+            decimal d = Convert.ToDecimal(size[end]);
             return d;
         }
     }
 
     public class corridor
     {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public double F { get; set; }
-        public corridor Prev { get; set; }
-        public double Dist { get; set; }
-        public string Name { get; set; }
-    }
+        public double name;
+        public double f;
+        public double next;
 
-    public class PriorityQueue<TPriority, TValue>
+        public corridor()
+        {
+        }
+
+        public corridor(double n)
+        {
+            this.next = n;
+        }
+
+        public corridor(double name, double n, double f)
+        {
+            this.name = name;
+            this.f = f;
+            this.next = n;
+        }
+
+        public corridor(double n, double f)
+        {
+            this.name = n;
+            this.f = f;
+        }
+    }
+    
+    public class PriorityQueue
     {
-        private List<KeyValuePair<TPriority, TValue>> _baseHeap;
-        private IComparer<TPriority> _comparer;
+        corridor max = new corridor();
+        int first = 0;
+        int count = 0;
+        List<corridor> list = new List<corridor>();
+        HashSet<corridor> top = new HashSet<corridor>();
 
         public PriorityQueue()
-            : this(Comparer<TPriority>.Default)
         {
+
         }
 
-        public PriorityQueue(IComparer<TPriority> comparer)
+        public bool isEmpty()
         {
-            if (comparer == null)
-                throw new ArgumentNullException();
-
-            _baseHeap = new List<KeyValuePair<TPriority, TValue>>();
-            _comparer = comparer;
+            return count == 0;
         }
 
-        public void InsertOrChange(TPriority priority, TValue value)
+        public corridor deleteMax()
         {
-            KeyValuePair<TPriority, TValue> val =
-new KeyValuePair<TPriority, TValue>(priority, value);
-            _baseHeap.Add(val);
-
-            // heapify after insert, from end to beginning
-            HeapifyFromEndToBeginning(_baseHeap.Count - 1);
+            top.Remove(max);
+            count--;
+            return max;
         }
 
-        private int HeapifyFromEndToBeginning(int pos)
+        public void insert(corridor v, double w)
         {
-            if (pos >= _baseHeap.Count) return -1;
-
-            // heap[i] have children heap[2*i + 1] and heap[2*i + 2] and parent heap[(i-1)/ 2];
-
-            while (pos > 0)
+            first++;
+            if (w > max.f || !top.Contains(max))
             {
-                int parentPos = (pos - 1) / 2;
-                if (_comparer.Compare(_baseHeap[parentPos].Key, _baseHeap[pos].Key) > 0)
-                {
-                    ExchangeElements(parentPos, pos);
-                    pos = parentPos;
-                }
-                else break;
+                max = v;
+                max.f = w;
+                top.Add(max);
             }
-            return pos;
+            count++;
+            v.f = w;
+            list.Add(v);
         }
 
-        private void ExchangeElements(int pos1, int pos2)
+        public void dec()
         {
-            KeyValuePair<TPriority, TValue> val = _baseHeap[pos1];
-            _baseHeap[pos1] = _baseHeap[pos2];
-            _baseHeap[pos2] = val;
+            count--;
         }
 
-        public TValue DequeueValue()
+        public void firstTime()
         {
-            return Dequeue().Value;
-        }
-
-        public KeyValuePair<TPriority, TValue> Dequeue()
-        {
-            if (!IsEmpty)
-            {
-                KeyValuePair<TPriority, TValue> result = _baseHeap[0];
-                DeleteRoot();
-                return result;
-            }
-            else
-                throw new InvalidOperationException("Priority queue is empty");
-        }
-
-        private void DeleteRoot()
-        {
-            if (_baseHeap.Count <= 1)
-            {
-                _baseHeap.Clear();
-                return;
-            }
-
-            _baseHeap[0] = _baseHeap[_baseHeap.Count - 1];
-            _baseHeap.RemoveAt(_baseHeap.Count - 1);
-
-            // heapify
-            HeapifyFromBeginningToEnd(0);
-        }
-
-        private void HeapifyFromBeginningToEnd(int pos)
-        {
-            if (pos >= _baseHeap.Count) return;
-
-            // heap[i] have children heap[2*i + 1] and heap[2*i + 2] and parent heap[(i-1)/ 2];
-
-            while (true)
-            {
-                // on each iteration exchange element with its smallest child
-                int smallest = pos;
-                int left = 2 * pos + 1;
-                int right = 2 * pos + 2;
-                if (left<_baseHeap.Count &&
-                    _comparer.Compare(_baseHeap[smallest].Key, _baseHeap[left].Key) > 0)
-                    smallest = left;
-                if (right<_baseHeap.Count &&
-                    _comparer.Compare(_baseHeap[smallest].Key, _baseHeap[right].Key) > 0)
-                    smallest = right;
-
-                if (smallest != pos)
-                {
-                    ExchangeElements(smallest, pos);
-                    pos = smallest;
-                }
-                else break;
-            }
-        }
-
-        public bool IsEmpty
-        {
-            get { return _baseHeap.Count == 0; }
+            first = 1;
         }
     }
 }
+
