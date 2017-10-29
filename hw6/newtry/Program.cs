@@ -10,7 +10,6 @@ namespace hw6
     {
         static void Main(string[] args)
         {
-            Dictionary<double, LinkedList<corridor>> adjacencyList = new Dictionary<double, LinkedList<corridor>>();
             List<decimal> output = new List<decimal>();
             bool loop = true;
             while (loop)
@@ -21,7 +20,9 @@ namespace hw6
                 int m;
                 Int32.TryParse(flineArray[0].ToString(), out n);
                 Int32.TryParse(flineArray[1].ToString(), out m);
-
+                
+                Dictionary<double, LinkedList<corridor>> adjacencyList = new Dictionary<double, LinkedList<corridor>>(n);
+                Dictionary<double, double> size = new Dictionary<double, double>(n);
                 if (n == 0 && m == 0)
                 {
                     loop = false;
@@ -44,23 +45,23 @@ namespace hw6
                         {
                             LinkedList<corridor> newLL = new LinkedList<corridor>();
                             adjacencyList.Add(y, newLL);
+                            size.Add(y, 0.0);
                         }
                         if (adjacencyList.ContainsKey(x) == false)
                         {
                             LinkedList<corridor> newLL = new LinkedList<corridor>();
                             adjacencyList.Add(x, newLL);
+                            size.Add(x, 0.0);
                         }
 
                         adjacencyList[y].AddLast(new corridor(y, x, f));
                         adjacencyList[x].AddLast(new corridor(x, y, f));
 
-
                     }
                     
-                    decimal num = dijkstra(adjacencyList, 0, n - 1);
+                    decimal num = dijkstra(ref adjacencyList, 0, n - 1, ref size);
                     output.Add(num);
-                    // clear adjacencyList Dict
-                    adjacencyList.Clear();
+
                 }
             }
 
@@ -71,23 +72,21 @@ namespace hw6
             Console.ReadLine();
         }
 
-        public static decimal dijkstra(Dictionary<double, LinkedList<corridor>> adjacencyList, double start, int end)
+        public static decimal dijkstra(ref Dictionary<double, LinkedList<corridor>> adjacencyList, double start, int end, ref Dictionary<double, double> size)
         {
-            Dictionary<double, double> size = new Dictionary<double, double>();
-
-            foreach (KeyValuePair<double, LinkedList<corridor>> entry in adjacencyList)
-            {
-                size.Add(entry.Key, 0.0);
-            }
             size[start] = 1.0;
 
-            PriorityQueue pq = new PriorityQueue();
-            pq.insert(new corridor(start), 1.0);
-            pq.firstTime();
+            MinHeap pq = new MinHeap(end+1);
+            pq.Add(1.0, new corridor(start));
 
-            while (!pq.isEmpty())
+            while (!pq.IsEmpty())
             {
-                corridor u = pq.deleteMax();
+                corridor u = pq.PopMin();
+                if (u.name == end)
+                {
+                    decimal dd = Convert.ToDecimal(size[u.name]);
+                    return dd;
+                }
 
                 LinkedList<corridor> edges = adjacencyList[u.next];
                 foreach (corridor v in edges)
@@ -95,7 +94,7 @@ namespace hw6
                     if (size[v.next] < v.f * size[u.next])
                     {
                         size[v.next] = v.f * size[u.next];
-                        pq.insert(new corridor(v.next), size[v.next]);
+                        pq.Add(size[v.next], new corridor(v.next));
                     }
                 }
 
@@ -133,55 +132,50 @@ namespace hw6
             this.f = f;
         }
     }
-    
-    public class PriorityQueue
+
+    public class MinHeap
     {
-        corridor max = new corridor();
-        int first = 0;
-        int count = 0;
-        List<corridor> list = new List<corridor>();
-        HashSet<corridor> top = new HashSet<corridor>();
-
-        public PriorityQueue()
+        static int N;
+        public MinHeap(int n)
         {
-
+            N = n;
         }
 
-        public bool isEmpty()
-        {
-            return count == 0;
-        }
+        public Dictionary<double, Queue<corridor>> map = new Dictionary<double, Queue<corridor>>(N);
+        public static int count;
 
-        public corridor deleteMax()
+        public void Add(double val, corridor node)
         {
-            top.Remove(max);
-            count--;
-            return max;
-        }
-
-        public void insert(corridor v, double w)
-        {
-            first++;
-            if (w > max.f || !top.Contains(max))
+            if (!map.ContainsKey(val))
             {
-                max = v;
-                max.f = w;
-                top.Add(max);
+                map.Add(val, new Queue<corridor>(N));
             }
+
+            map[val].Enqueue(node);
             count++;
-            v.f = w;
-            list.Add(v);
         }
 
-        public void dec()
+        public corridor PopMin()
         {
+            double minKey = map.First().Key;
+            corridor node = map[minKey].Dequeue();
+
+            if (map[minKey].Count == 0)
+                map.Remove(minKey);
+
             count--;
+            return node;
         }
 
-        public void firstTime()
+        public bool IsEmpty()
         {
-            first = 1;
+            if(count != 0)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
+
 
