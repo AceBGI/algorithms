@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Numerics;
+//using System.Numerics;
 
 namespace hw7
 {
@@ -64,10 +64,10 @@ namespace hw7
             return keyRSA(key1, key2);
         }
 
-        private static string keyRSA(long key1, long key2)
+        private static string keyRSA(long p, long q)
         {
-            long N = key1 * key2;
-            long Euler = (key1 - 1) * (key2 - 1);
+            long N = p * q;
+            long Euler = (p - 1) * (q - 1);
             long e = 0;
             for (int i = 2; i <= Euler; i++)
             {
@@ -78,9 +78,25 @@ namespace hw7
                 }
             }
 
-            BigInteger b = new BigInteger(179032.6541);
-            long d = long.Parse(modInverse(e, Euler));
-            return N + " " + e + " " + 1;
+            long d = ModInverse(e, Euler);
+            return N + " " + e + " " + d;
+        }
+
+        private static long ModInverse(long a, long n)
+        {
+            long i = n, v = 0, d = 1;
+            while (a > 0)
+            {
+                long t = i / a, x = a;
+                a = i % x;
+                i = x;
+                x = d;
+                d = v - t * x;
+                v = x;
+            }
+            v %= n;
+            if (v < 0) v = (v + n) % n;
+            return v;
         }
 
         private static string isprime(long isprime1)
@@ -105,24 +121,24 @@ namespace hw7
 
         }
 
-        private static int inverse(long inverse1, long inverse2)
+        private static long inverse(long inverse1, long inverse2)
         {
-            int x = 0;
-            int y = 0;
+            long x = 0;
+            long y = 0;
 
-            int gcd = gcdHelper((int)inverse1, (int)inverse2, ref x, ref y);
+            long gcd = gcdHelper(inverse1, inverse2, ref x, ref y);
 
             if (gcd != 1)
                 return -1;
             else
             {
                 // m is added to handle negative x
-                int res = (x % (int)inverse2 + (int)inverse2) % (int)inverse2;
+                long res = (x % inverse2 + inverse2) % inverse2;
                 return res;
             }
         }
 
-        private static int gcdHelper(int a, int b, ref int x, ref int y)
+        private static long gcdHelper(long a, long b, ref long x, ref long y)
         {
             // Base Case
             if (a == 0)
@@ -132,9 +148,9 @@ namespace hw7
                 return b;
             }
 
-            int x1 = 0;
-            int y1 = 0; // To store results of recursive call
-            int gcd = gcdHelper(b % a, a, ref x1, ref y1);
+            long x1 = 0;
+            long y1 = 0; // To store results of recursive call
+            long gcd = gcdHelper(b % a, a, ref x1, ref y1);
 
             // Update x and y using results of recursive
             // call
@@ -143,8 +159,6 @@ namespace hw7
 
             return gcd;
         }
-
-
 
 
         private static int exp(long exp1, long exp2, long exp3)
