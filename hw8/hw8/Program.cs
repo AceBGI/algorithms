@@ -49,20 +49,22 @@ namespace hw8
                     temp = Dict[i].Last().Value;
                     Dict.Remove(i);
                 }
-
-                foreach (SortedDictionary<int, int> item in Dict.Values)
+                int removeSpot = 0;
+                bool removeFlag = false;
+                foreach (var item in Dict)
                 {
-                    if(item.Count > 1)
+                    if(item.Value.Count > 1)
                     {
-                        if(item.ElementAt((item.Count - 1) - 1).Value > temp)
+                        if(item.Value.ElementAt((item.Value.Count - 1) - 1).Value > temp)
                         {
-                            temp = item.ElementAt((item.Count - 1) - 1).Value;
-                            Dict.Remove(item.ElementAt((item.Count - 1) - 1).Key);
-                            break;
+                            temp = item.Value.ElementAt((item.Value.Count - 1) - 1).Value;
+                            removeSpot = item.Key;
+                            removeFlag = true;
                         }
                     }
                 }
-
+                if(removeFlag)
+                    Dict[removeSpot].Remove(temp);
                 sum += temp;
             }
 
