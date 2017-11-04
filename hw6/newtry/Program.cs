@@ -59,9 +59,10 @@ namespace hw6
 
                     }
                     
-                    decimal num = dijkstra(ref adjacencyList, 0, n - 1, ref size);
+                    decimal num = dijkstra(ref adjacencyList, 0, n - 1, ref size, m);
                     output.Add(num);
-
+                    adjacencyList.Clear();
+                    size.Clear();
                 }
             }
 
@@ -72,8 +73,9 @@ namespace hw6
             Console.ReadLine();
         }
 
-        public static decimal dijkstra(ref Dictionary<double, LinkedList<corridor>> adjacencyList, double start, int end, ref Dictionary<double, double> size)
+        public static decimal dijkstra(ref Dictionary<double, LinkedList<corridor>> adjacencyList, double start, int end, ref Dictionary<double, double> size, int m)
         {
+            int infCount = 0;
             size[start] = 1.0;
 
             MinHeap pq = new MinHeap(end+1);
@@ -82,6 +84,14 @@ namespace hw6
             while (!pq.IsEmpty())
             {
                 corridor u = pq.PopMin();
+                if (u.seen == true || infCount > (end+1) * m)
+                {
+                    decimal ddd = Convert.ToDecimal(size[u.name]);
+                    return ddd;
+                }
+
+                u.seen = true;
+
                 if (u.name == end)
                 {
                     decimal dd = Convert.ToDecimal(size[u.name]);
@@ -97,7 +107,7 @@ namespace hw6
                         pq.Add(size[v.next], new corridor(v.next));
                     }
                 }
-
+                infCount++;
             }
             decimal d = Convert.ToDecimal(size[end]);
             return d;
@@ -109,6 +119,7 @@ namespace hw6
         public double name;
         public double f;
         public double next;
+        public bool seen { get; set; } = false;
 
         public corridor()
         {

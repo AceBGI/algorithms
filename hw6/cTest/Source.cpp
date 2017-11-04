@@ -1,17 +1,9 @@
-/*
-* Get Shorty
-* https://kth.kattis.scrool.se/problems/getshorty
-*
-* @author Martin Runelöv
-*/
-
 #include <cstdio>
 #include <cstring>
 #include <iostream>
 #include <algorithm>
 #include <queue>
 #include <utility>
-#include "stdafx.h"
 
 using namespace std;
 
