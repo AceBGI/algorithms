@@ -10,7 +10,7 @@ namespace hw8
     {
         static void Main(string[] args)
         {
-            SortedDictionary<int, SortedDictionary<int,int> > Dict = new SortedDictionary<int, SortedDictionary<int,int>>();
+            SortedDictionary<int, List<int> > Dict = new SortedDictionary<int, List<int>>();
             int sum = 0;
 
             string firstLine = Console.ReadLine();
@@ -31,41 +31,41 @@ namespace hw8
 
                 if (Dict.ContainsKey(time))
                 {
-                    Dict[time].Add(money,money);
+                    Dict[time].Add(money);
+                    Dict[time].Sort();
                 }
                 else
                 {
-                    SortedDictionary<int, int> newPerson = new SortedDictionary<int, int>();
-                    newPerson.Add(money, money);
-                    Dict.Add(time, newPerson);
+                    List<int> listOfPeople = new List<int>();
+                    listOfPeople.Add(money);
+                    Dict.Add(time, listOfPeople);
                 }
             }
 
-            for (int i = 0; i <= T; i++)
+            for (int i = T; i >= 0; i--)
             {
-                int temp = 0;
-                if (Dict.ContainsKey(i))
+                if(Dict.ContainsKey(i))
                 {
-                    temp = Dict[i].Last().Value;
-                    Dict.Remove(i);
-                }
-                int removeSpot = 0;
-                bool removeFlag = false;
-                foreach (var item in Dict)
-                {
-                    if(item.Value.Count > 1)
+                    int temp = Dict[i].Last();
+                    int index = i;
+
+                    for (int j = i+1; j < T; j++)
                     {
-                        if(item.Value.ElementAt((item.Value.Count - 1) - 1).Value > temp)
+                        if (Dict.ContainsKey(j) && Dict[j].Count > 0)
                         {
-                            temp = item.Value.ElementAt((item.Value.Count - 1) - 1).Value;
-                            removeSpot = item.Key;
-                            removeFlag = true;
+                            if(Dict[j].Last() > temp)
+                            {
+                                temp = Dict[j].Last();
+                                index = j;
+                            }
                         }
                     }
+
+                    Dict[index].Remove(temp);
+                    Dict[index].Sort();
+
+                    sum += temp;
                 }
-                if(removeFlag)
-                    Dict[removeSpot].Remove(temp);
-                sum += temp;
             }
 
             Console.WriteLine(sum);
