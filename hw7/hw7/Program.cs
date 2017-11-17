@@ -67,6 +67,7 @@ namespace hw7
         private static string keyRSA(long p, long q)
         {
             long N = p * q;
+            Console.WriteLine("N = " + N);
             long Euler = (p - 1) * (q - 1);
             long e = 0;
             for (int i = 2; i <= Euler; i++)
@@ -78,7 +79,10 @@ namespace hw7
                 }
             }
 
+            Console.WriteLine("e = " + e);
             long d = ModInverse(e, Euler);
+            Console.WriteLine("fe = " + Euler);
+            Console.WriteLine("d = " + d);
             return N + " " + e + " " + d;
         }
 
